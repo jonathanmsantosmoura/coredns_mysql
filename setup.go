@@ -2,6 +2,7 @@ package coredns_mysql
 
 import (
 	"database/sql"
+	"fmt"
 	"os"
 	"strconv"
 	"time"
@@ -9,7 +10,10 @@ import (
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
+	clog "github.com/coredns/coredns/plugin/pkg/log"
 )
+
+var log = clog.NewWithPlugin("mysql")
 
 const (
 	defaultTtl                = 360
@@ -149,9 +153,12 @@ func (handler *CoreDNSMySql) initDB() (*sql.DB, error) {
 
 	// db.SetConnMaxLifetime(handler.MaxLifetime)
 	db.SetMaxOpenConns(handler.MaxOpenConnections)
-	//db.SetMaxIdleConns(handler.MaxIdleConnections)
+	db.SetMaxIdleConns(handler.MaxIdleConnections)
 
 	databaseCoredns = db
+
+	log.Info("MaxOpenConnections:" + fmt.Sprint(handler.MaxOpenConnections))
+	log.Info("MaxIdleConnections:" + fmt.Sprint(handler.MaxIdleConnections))
 
 	return db, nil
 }
