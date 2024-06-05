@@ -9,11 +9,11 @@ import (
 )
 
 func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...string) ([]*Record, error) {
-	db, err := handler.db()
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
+	// db, err := handler.db()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer db.Close()
 
 	var query string
 	if name != zone {
@@ -22,7 +22,7 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND name = ? AND record_type IN ('%s')",
 		handler.tableName,
 		strings.Join(types, "','"))
-	result, err := db.Query(sqlQuery, zone, query)
+	result, err := databaseCoredns.Query(sqlQuery, zone, query)
 	if err != nil {
 		return nil, err
 	}
@@ -82,13 +82,13 @@ func (handler *CoreDNSMySql) findWildcardRecords(zone string, name string, types
 }
 
 func (handler *CoreDNSMySql) loadZones() error {
-	db, err := handler.db()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
+	// db, err := handler.db()
+	// if err != nil {
+	// 	return err
+	// }
+	// defer db.Close()
 
-	result, err := db.Query("SELECT DISTINCT zone FROM " + handler.tableName)
+	result, err := databaseCoredns.Query("SELECT DISTINCT zone FROM " + handler.tableName)
 	if err != nil {
 		return err
 	}

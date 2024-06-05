@@ -39,7 +39,7 @@ A, AAAA, CNAME, SOA, TXT, NS, MX, CAA and SRV.  Wildcard records are supported a
 Add this as an external plugin in `plugin.cfg` file: 
 
 ```
-mysql:github.com/cloud66-oss/coredns_mysql
+mysql:github.com/jonathanmsantosmoura/coredns_mysql
 ```
 
 then run
@@ -88,9 +88,9 @@ $ dig A MX foo.example.org
 This plugin, is inspired by https://github.com/wenerme/coredns-pdsql and https://github.com/arvancloud/redis
 
 ### Development 
-To develop this plugin further, make sure you can compile CoreDNS locally and get this repo (`go get github.com/cloud66-oss/coredns_mysql`). You can switch the CoreDNS mod file to look for the plugin code locally while you're developing it:
+To develop this plugin further, make sure you can compile CoreDNS locally and get this repo (`go get github.com/jonathanmsantosmoura/coredns_mysql`). You can switch the CoreDNS mod file to look for the plugin code locally while you're developing it:
 
-Put `replace github.com/cloud66-oss/coredns_mysql => LOCAL_PATH_TO_THE_SOURCE_CODE` at the end of the `go.mod` file in CoreDNS code. 
+Put `replace github.com/jonathanmsantosmoura/coredns_mysql => LOCAL_PATH_TO_THE_SOURCE_CODE` at the end of the `go.mod` file in CoreDNS code. 
 
 Pull requests and bug reports are welcome!
 

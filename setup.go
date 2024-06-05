@@ -124,7 +124,7 @@ func mysqlParse(c *caddy.Controller) (*CoreDNSMySql, error) {
 
 	}
 
-	db, err := mysql.db()
+	db, err := mysql.initDB()
 	if err != nil {
 		return nil, err
 	}
@@ -133,22 +133,25 @@ func mysqlParse(c *caddy.Controller) (*CoreDNSMySql, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer db.Close()
 
 	mysql.tableName = mysql.TablePrefix + "records"
 
 	return &mysql, nil
 }
 
-func (handler *CoreDNSMySql) db() (*sql.DB, error) {
+var databaseCoredns *sql.DB
+
+func (handler *CoreDNSMySql) initDB() (*sql.DB, error) {
 	db, err := sql.Open("mysql", os.ExpandEnv(handler.Dsn))
 	if err != nil {
 		return nil, err
 	}
 
-	db.SetConnMaxLifetime(handler.MaxLifetime)
+	// db.SetConnMaxLifetime(handler.MaxLifetime)
 	db.SetMaxOpenConns(handler.MaxOpenConnections)
-	db.SetMaxIdleConns(handler.MaxIdleConnections)
+	//db.SetMaxIdleConns(handler.MaxIdleConnections)
+
+	databaseCoredns = db
 
 	return db, nil
 }
