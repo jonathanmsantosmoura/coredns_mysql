@@ -49,6 +49,8 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 		})
 	}
 
+	result.Close()
+
 	// If no records found, check for wildcard records.
 	if len(records) == 0 && name != zone {
 		return handler.findWildcardRecords(zone, name, types...)
@@ -103,6 +105,8 @@ func (handler *CoreDNSMySql) loadZones() error {
 
 		zones = append(zones, zone)
 	}
+
+	result.Close()
 
 	handler.lastZoneUpdate = time.Now()
 	handler.zones = zones
