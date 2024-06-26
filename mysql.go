@@ -20,7 +20,7 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 		query = strings.TrimSuffix(name, "."+zone)
 	}
 
-	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND name = ? AND record_type IN ('%s')",
+	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND (name = ? OR name IS NULL) AND record_type IN ('%s')",
 		handler.tableName,
 		strings.Join(types, "','"))
 	result, err := databaseCoredns.Query(sqlQuery, zone, query)
@@ -60,9 +60,9 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 	log.Info("finished--------------------", types, "----------------------")
 
 	// If no records found, check for wildcard records.
-	if len(records) == 0 && name != zone {
-		return handler.findWildcardRecords(zone, name, types...)
-	}
+	// if len(records) == 0 && name != zone {
+	// 	return handler.findWildcardRecords(zone, name, types...)
+	// }
 
 	return records, nil
 }
@@ -70,26 +70,26 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 // findWildcardRecords attempts to find wildcard records
 // recursively until it finds matching records.
 // e.g. x.y.z -> *.y.z -> *.z -> *
-func (handler *CoreDNSMySql) findWildcardRecords(zone string, name string, types ...string) ([]*Record, error) {
-	const (
-		wildcard       = "*"
-		wildcardPrefix = wildcard + "."
-	)
+// func (handler *CoreDNSMySql) findWildcardRecords(zone string, name string, types ...string) ([]*Record, error) {
+// 	const (
+// 		wildcard       = "*"
+// 		wildcardPrefix = wildcard + "."
+// 	)
 
-	if name == wildcard {
-		return nil, nil
-	}
+// 	if name == wildcard {
+// 		return nil, nil
+// 	}
 
-	name = strings.TrimPrefix(name, wildcardPrefix)
+// 	name = strings.TrimPrefix(name, wildcardPrefix)
 
-	target := wildcard
-	i, shot := dns.NextLabel(name, 0)
-	if !shot {
-		target = wildcardPrefix + name[i:]
-	}
+// 	target := wildcard
+// 	i, shot := dns.NextLabel(name, 0)
+// 	if !shot {
+// 		target = wildcardPrefix + name[i:]
+// 	}
 
-	return handler.findRecord(zone, target, types...)
-}
+// 	return handler.findRecord(zone, target, types...)
+// }
 
 func (handler *CoreDNSMySql) loadZones() error {
 	// db, err := handler.db()
