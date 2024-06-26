@@ -69,6 +69,63 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 	return records, nil
 }
 
+func (handler *CoreDNSMySql) findRecordByZoneAndName(zone string, name string) ([]*Record, error) {
+	// db, err := handler.db()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer db.Close()
+
+	var query string
+	if name != zone {
+		query = strings.TrimSuffix(name, "."+zone)
+	}
+
+	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND name = ?",
+		handler.tableName)
+	result, err := databaseCoredns.Query(sqlQuery, zone, query)
+	if err != nil {
+		return nil, err
+	}
+
+	var recordName string
+	var recordZone string
+	var recordType string
+	var ttl uint32
+	var content string
+	records := make([]*Record, 0)
+	for result.Next() {
+		err = result.Scan(&recordName, &recordZone, &ttl, &recordType, &content)
+		if err != nil {
+			return nil, err
+		}
+
+		records = append(records, &Record{
+			Name:       recordName,
+			Zone:       recordZone,
+			RecordType: recordType,
+			Ttl:        ttl,
+			Content:    content,
+			handler:    handler,
+		})
+	}
+
+	result.Close()
+
+	log.Info("init--------------------SINGLE----------------------")
+	log.Info("name:", name)
+	log.Info("zone:", zone)
+	log.Info("query:", query)
+	log.Info("finished------------------------------------------")
+
+	// If no records found, check for wildcard records.
+	// if len(records) == 0 && name != zone {
+	// 	return handler.findWildcardRecords(zone, name, types...)
+	// }
+
+	return records, nil
+}
+
 // findWildcardRecords attempts to find wildcard records
 // recursively until it finds matching records.
 // e.g. x.y.z -> *.y.z -> *.z -> *
