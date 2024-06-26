@@ -20,7 +20,7 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 		query = strings.TrimSuffix(name, "."+zone)
 	}
 
-	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND (name = ? OR name IS NULL) AND record_type IN ('%s')",
+	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND name = ? AND record_type IN ('%s')",
 		handler.tableName,
 		strings.Join(types, "','"))
 	result, err := databaseCoredns.Query(sqlQuery, zone, query)
