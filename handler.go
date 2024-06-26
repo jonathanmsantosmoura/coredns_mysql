@@ -1,7 +1,6 @@
 package coredns_mysql
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/coredns/coredns/plugin"
@@ -48,10 +47,6 @@ func (handler *CoreDNSMySql) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 	records, err := handler.findRecord(qZone, qName, qType)
 	if err != nil {
 		return handler.errorResponse(state, dns.RcodeServerFailure, err)
-	}
-
-	if qType == "AAAA" {
-		fmt.Println("oi:", len(records))
 	}
 
 	var recordNotFound bool
@@ -121,12 +116,10 @@ func (handler *CoreDNSMySql) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 
 	if !recordNotFound {
 		m.Answer = append(m.Answer, answers...)
+	} else {
+		m.Ns = append(m.Ns, answers...)
+		m.Rcode = dns.RcodeNameError
 	}
-	// else {
-	// 	m.Ns = append(m.Ns, answers...)
-	// 	// m.Rcode = dns.RcodeNameError
-	// 	m.Rcode = dns.RcodeSuccess
-	// }
 
 	m.Extra = append(m.Extra, extras...)
 
