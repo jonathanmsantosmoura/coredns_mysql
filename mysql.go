@@ -20,10 +20,6 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 		query = strings.TrimSuffix(name, "."+zone)
 	}
 
-	log.Info("name:", name)
-	log.Info("zone:", zone)
-	log.Info("query:", query)
-
 	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND name = ? AND record_type IN ('%s')",
 		handler.tableName,
 		strings.Join(types, "','"))
@@ -55,6 +51,13 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 	}
 
 	result.Close()
+
+	log.Info("init--------------------", types, "----------------------")
+	log.Info("name:", name)
+	log.Info("zone:", zone)
+	log.Info("query:", query)
+	log.Info("types:", types)
+	log.Info("finished--------------------", types, "----------------------")
 
 	// If no records found, check for wildcard records.
 	if len(records) == 0 && name != zone {
