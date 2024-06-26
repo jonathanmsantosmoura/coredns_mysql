@@ -135,8 +135,9 @@ func (handler *CoreDNSMySql) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 			} else {
 				m.Rcode = dns.RcodeSuccess
 			}
+		} else {
+			m.Rcode = dns.RcodeNameError
 		}
-
 	}
 
 	m.Extra = append(m.Extra, extras...)
