@@ -16,10 +16,10 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 	// defer db.Close()
 
 	var query string
-	if name != zone {
+	if name == "" && types[0] == "SOA" {
+		query = zone
+	} else if name != zone {
 		query = strings.TrimSuffix(name, "."+zone)
-	} else {
-		query = name
 	}
 
 	sqlQuery := fmt.Sprintf("SELECT name, zone, ttl, record_type, content FROM %s WHERE zone = ? AND name = ? AND record_type IN ('%s')",
