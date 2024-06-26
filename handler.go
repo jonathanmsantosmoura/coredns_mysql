@@ -29,13 +29,8 @@ type CoreDNSMySql struct {
 func (handler *CoreDNSMySql) ServeDNS(ctx context.Context, w dns.ResponseWriter, r *dns.Msg) (int, error) {
 	state := request.Request{W: w, Req: r}
 
-	log.Info("dns-i----------------------")
-
 	qName := state.Name()
 	qType := state.Type()
-
-	log.Info("qName", qName)
-	log.Info("qType", qType)
 
 	if time.Since(handler.lastZoneUpdate) > handler.zoneUpdateTime {
 		err := handler.loadZones()
@@ -146,7 +141,6 @@ func (handler *CoreDNSMySql) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 	m = state.Scrub(m)
 	_ = w.WriteMsg(m)
 
-	log.Info("dns-f----------------------")
 	return dns.RcodeSuccess, nil
 }
 

@@ -54,13 +54,6 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 
 	result.Close()
 
-	log.Info("init--------------------", types, "----------------------")
-	log.Info("name:", name)
-	log.Info("zone:", zone)
-	log.Info("query:", query)
-	log.Info("types:", types)
-	log.Info("finished--------------------", types, "----------------------")
-
 	// If no records found, check for wildcard records.
 	// if len(records) == 0 && name != zone {
 	// 	return handler.findWildcardRecords(zone, name, types...)
@@ -111,12 +104,6 @@ func (handler *CoreDNSMySql) findRecordByZoneAndName(zone string, name string) (
 	}
 
 	result.Close()
-
-	log.Info("init--------------------SINGLE----------------------")
-	log.Info("name:", name)
-	log.Info("zone:", zone)
-	log.Info("query:", query)
-	log.Info("finished------------------------------------------")
 
 	// If no records found, check for wildcard records.
 	// if len(records) == 0 && name != zone {
