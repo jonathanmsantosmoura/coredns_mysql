@@ -27,6 +27,7 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 		strings.Join(types, "','"))
 	result, err := databaseCoredns.Query(sqlQuery, zone, query)
 	if err != nil {
+		log.Info(err)
 		return nil, err
 	}
 
@@ -62,6 +63,38 @@ func (handler *CoreDNSMySql) findRecord(zone string, name string, types ...strin
 	return records, nil
 }
 
+func (handler *CoreDNSMySql) findRecordByZoneAndNameStatic(zone string, name string) ([]*Record, error) {
+	// db, err := handler.db()
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer db.Close()
+
+	var recordName = name
+	var recordZone = zone
+	var recordType string
+	var ttl uint32 = 60
+	var content string = fmt.Sprintf("{'ttl':100,'mbox':hostmaster.%s,'ns':ns1.%s, 'refresh':44,'retry':55,'expire':66}", zone, zone)
+
+	records := make([]*Record, 0)
+
+	records = append(records, &Record{
+		Name:       recordName,
+		Zone:       recordZone,
+		RecordType: recordType,
+		Ttl:        ttl,
+		Content:    content,
+		handler:    handler,
+	})
+
+	// If no records found, check for wildcard records.
+	// if len(records) == 0 && name != zone {
+	// 	return handler.findWildcardRecords(zone, name, types...)
+	// }
+
+	return records, nil
+}
+
 func (handler *CoreDNSMySql) findRecordByZoneAndName(zone string, name string) ([]*Record, error) {
 	// db, err := handler.db()
 	// if err != nil {
@@ -78,6 +111,7 @@ func (handler *CoreDNSMySql) findRecordByZoneAndName(zone string, name string) (
 		handler.tableName)
 	result, err := databaseCoredns.Query(sqlQuery, zone, query)
 	if err != nil {
+		log.Info(err)
 		return nil, err
 	}
 
@@ -146,6 +180,7 @@ func (handler *CoreDNSMySql) loadZones() error {
 
 	result, err := databaseCoredns.Query("SELECT DISTINCT zone FROM " + handler.tableName)
 	if err != nil {
+		log.Info(err)
 		return err
 	}
 
@@ -171,6 +206,7 @@ func (handler *CoreDNSMySql) loadZones() error {
 func (handler *CoreDNSMySql) hosts(zone string, name string) ([]dns.RR, error) {
 	recs, err := handler.findRecord(zone, name, "A", "AAAA", "CNAME")
 	if err != nil {
+		log.Info(err)
 		return nil, err
 	}
 

@@ -120,7 +120,7 @@ func (handler *CoreDNSMySql) ServeDNS(ctx context.Context, w dns.ResponseWriter,
 		m.Ns = append(m.Ns, answers...)
 
 		if len(answers) > 0 {
-			recordsZN, err := handler.findRecordByZoneAndName(qZone, qName)
+			recordsZN, err := handler.findRecordByZoneAndNameStatic(qZone, qName)
 			if err != nil {
 				return handler.errorResponse(state, dns.RcodeServerFailure, err)
 			}

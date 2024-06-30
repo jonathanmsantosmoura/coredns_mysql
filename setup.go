@@ -148,6 +148,7 @@ var databaseCoredns *sql.DB
 func (handler *CoreDNSMySql) initDB() (*sql.DB, error) {
 	db, err := sql.Open("mysql", os.ExpandEnv(handler.Dsn))
 	if err != nil {
+		log.Info(err)
 		return nil, err
 	}
 
